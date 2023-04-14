@@ -1,6 +1,8 @@
+import { SnippetFiller } from "../snippet-filler";
+
 export class StringUtils {
   static completeToLength(
-    toComplete: string,
+    toComplete: string | SnippetFiller,
     toLength: number,
     withChar: string
   ): string {
@@ -16,7 +18,7 @@ export class StringUtils {
       s += withChar;
     }
 
-    return toComplete + s;
+    return toComplete.concat(s).toString();
   }
 
   static repeat(
@@ -36,5 +38,9 @@ export class StringUtils {
     }
 
     return s;
+  }
+
+  static replaceAll(s: string, from: string, to: string): string {
+    return s.split(from).join(to);
   }
 }

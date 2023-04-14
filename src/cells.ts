@@ -1,7 +1,8 @@
 import { CellError } from "./errors/CellError";
 import { GenerateTableInput } from "./interfaces/GenerateTableInput";
 import { Stringable } from "./interfaces/IStringable";
-import { DolarsIterator } from "./utils/dollars-interator";
+import { SnippetFiller } from "./snippet-filler";
+import { BasicIterator } from "./utils/basic-interator";
 import { ObjectUtils } from "./utils/object.utils";
 import { StringUtils } from "./utils/string.utils";
 
@@ -14,7 +15,7 @@ export function generateTable<
   headers,
   content,
 }: GenerateTableInput<THeader, TContent>): string {
-  const dollarsIte = new DolarsIterator(0);
+  const iterator = new BasicIterator(1);
 
   if (width <= 0) {
     throw new CellError("Table's width cannot be 0.");
@@ -63,21 +64,33 @@ export function generateTable<
 
   // complete header
   while (headers.length < width) {
-    headers.push(dollarsIte.next());
+    headers.push(
+      new SnippetFiller(iterator.next(), `header${headers.length + 1}`)
+    );
   }
 
   // complete content
   for (let i = 0; i < height; i++) {
     while (content[i].length < width) {
-      content[i].push(dollarsIte.next());
+      content[i].push(
+        new SnippetFiller(
+          iterator.next(),
+          `cell ${i + 1},${content[i].length + 1}`
+        )
+      );
     }
   }
+
+  const getLength = (stringable: Stringable): number =>
+    stringable instanceof SnippetFiller
+      ? stringable.length
+      : stringable.toString().length;
 
   let maxLength: number[] = [];
   for (let colIndex = 0; colIndex < width; colIndex++) {
     maxLength[colIndex] = Math.max(
-      headers[colIndex].toString().length,
-      ...content.map((a) => a[colIndex].toString().length)
+      getLength(headers[colIndex]),
+      ...content.map((a) => getLength(a[colIndex]))
     );
   }
 
@@ -86,7 +99,11 @@ export function generateTable<
     "| " +
       headers
         .map((val, index) =>
-          StringUtils.completeToLength(val.toString(), maxLength[index], " ")
+          StringUtils.completeToLength(
+            val instanceof SnippetFiller ? val : val.toString(),
+            maxLength[index],
+            " "
+          )
         )
         .join(" | ") +
       " |"
@@ -100,7 +117,11 @@ export function generateTable<
       "| " +
         content[h]
           .map((val, index) =>
-            StringUtils.completeToLength(val.toString(), maxLength[index], " ")
+            StringUtils.completeToLength(
+              val instanceof SnippetFiller ? val : val.toString(),
+              maxLength[index],
+              " "
+            )
           )
           .join(" | ") +
         " |"

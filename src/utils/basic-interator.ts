@@ -1,15 +1,14 @@
 import { Iterator } from "../interfaces/Iterator";
 
-export class DolarsIterator implements Iterator<String> {
+export class BasicIterator implements Iterator<number> {
   private i: number;
 
   constructor(start: number = 0) {
     this.i = start;
   }
 
-  next(): String {
-    this.i++;
-    return "$" + this.i.toString();
+  next(): number {
+    return this.i++;
   }
 
   complete(): boolean {
