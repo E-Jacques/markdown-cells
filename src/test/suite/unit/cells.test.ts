@@ -17,7 +17,7 @@ suite("Cells function unit test suite", () => {
         test("With only header (heigth = 0)", () => {
           assert.strictEqual(
             generateTable({ width: 4, height: 0 }),
-            "| $1 | $2  | $3  | $4  |"
+            "| $1 | $2 | $3 | $4 |\n|----|----|----|----|"
           );
         });
 
@@ -45,7 +45,7 @@ suite("Cells function unit test suite", () => {
                 [3, 4],
               ],
             }),
-            "| test1 | test2 |\n|------|------|\n| 1     | 2     |\n| 3     | 4     |"
+            "| test1 | test2 |\n|-------|-------|\n| 1     | 2     |\n| 3     | 4     |"
           );
         });
 
@@ -98,6 +98,50 @@ suite("Cells function unit test suite", () => {
             new CellError(
               "Too much data in cells. Expecting 2 on multiples lines (1, 2), got 3."
             )
+          );
+        });
+      }
+    );
+
+    suite(
+      "Generate the right amout of lines and columns with partial custom inputs",
+      () => {
+        test("For partial header", () => {
+          assert.strictEqual(
+            generateTable({
+              width: 2,
+              height: 2,
+              headers: ["test1"],
+              content: [
+                [1, 2],
+                [3, 4],
+              ],
+            }),
+            "| test1 | $1 |\n|-------|----|\n| 1     | 2  |\n| 3     | 4  |"
+          );
+        });
+
+        test("For partial content", () => {
+          assert.strictEqual(
+            generateTable({
+              width: 2,
+              height: 2,
+              headers: ["test1", "test2"],
+              content: [[1], [4]],
+            }),
+            "| test1 | test2 |\n|-------|-------|\n| 1     | $1    |\n| 4     | $2    |"
+          );
+        });
+
+        test("For both partial header and content", () => {
+          assert.strictEqual(
+            generateTable({
+              width: 2,
+              height: 2,
+              headers: ["test1"],
+              content: [[1, 2], [3]],
+            }),
+            "| test1 | $1 |\n|-------|----|\n| 1     | 2  |\n| 3     | $2 |"
           );
         });
       }
