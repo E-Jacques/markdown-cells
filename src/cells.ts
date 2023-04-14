@@ -1,3 +1,5 @@
+import * as vscode from "vscode";
+
 import { CellError } from "./errors/CellError";
 import { GenerateTableInput } from "./interfaces/GenerateTableInput";
 import { Stringable } from "./interfaces/IStringable";
@@ -5,6 +7,59 @@ import { SnippetFiller } from "./snippet-filler";
 import { BasicIterator } from "./utils/basic-interator";
 import { ObjectUtils } from "./utils/object.utils";
 import { StringUtils } from "./utils/string.utils";
+import { VscodeUtils } from "./utils/vscode.utils";
+
+export async function getGenerateTableData(): Promise<{
+  input: GenerateTableInput<string, string>;
+  shouldReplace: boolean;
+}> {
+  const activeEditor = vscode.window.activeTextEditor;
+  if (activeEditor?.selections && activeEditor?.selections.length === 1) {
+    return {
+      input: parseData(
+        activeEditor.document.getText(activeEditor?.selection).split("\n"),
+        " "
+      ),
+      shouldReplace: true,
+    };
+  }
+
+  let input = await vscode.window.showInputBox({
+    placeHolder: "Enter dimension: width x height",
+    prompt:
+      "Generate a table (dimension will correspond to what you've specified)",
+  });
+
+  if (!ObjectUtils.nullOrUndefined(input)) {
+    input = StringUtils.replaceAll(input, " ", "");
+  }
+
+  if (ObjectUtils.nullOrUndefined(input) || !/\dx\d/.test(input)) {
+    throw new CellError("Dimension should respect the format: width x height");
+  }
+
+  const [width, height] = input.split("x").map((a) => Number.parseInt(a));
+  return { shouldReplace: false, input: { width, height } };
+}
+
+export function parseData(
+  data: string[],
+  rowDelimiter: string
+): GenerateTableInput<string, string> {
+  let dataArray = data.map((s) => s.split(rowDelimiter));
+
+  const height = dataArray.length - 1; // Retrieve one because of header
+  const width = Math.max(...dataArray.map((a) => a.length));
+  const headers = dataArray.shift();
+  const content = height === 0 ? undefined : dataArray;
+
+  return {
+    height,
+    width,
+    headers,
+    content,
+  };
+}
 
 export function generateTable<
   THeader extends Stringable,
