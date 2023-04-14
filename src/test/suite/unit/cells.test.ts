@@ -25,7 +25,7 @@ suite("Cells function unit test suite", () => {
           // We also need to test that an error popup have been raised
           assert.throws(
             () => generateTable({ width: 0, height: 3 }),
-            new CellError("Table width cannot be 0.")
+            new CellError("Table's width cannot be 0.")
           );
         });
       }
