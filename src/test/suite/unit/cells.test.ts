@@ -10,14 +10,18 @@ suite("Cells function unit test suite", () => {
         test("General case", () => {
           assert.strictEqual(
             generateTable({ width: 4, height: 2 }),
-            "| $1 | $2  | $3  | $4  |\n|----|-----|-----|-----|\n| $5 | $6  | $7  | $8  |\n| $9 | $10 | $11 | $12 |"
+            "| ${1:header1 } | ${2:header2 } | ${3:header3 } | ${4:header4 } |\n" +
+              "|----------|----------|----------|----------|\n" +
+              "| ${5:cell 1,1} | ${6:cell 1,2} | ${7:cell 1,3} | ${8:cell 1,4} |\n" +
+              "| ${9:cell 2,1} | ${10:cell 2,2} | ${11:cell 2,3} | ${12:cell 2,4} |"
           );
         });
 
         test("With only header (heigth = 0)", () => {
           assert.strictEqual(
             generateTable({ width: 4, height: 0 }),
-            "| $1 | $2 | $3 | $4 |\n|----|----|----|----|"
+            "| ${1:header1} | ${2:header2} | ${3:header3} | ${4:header4} |\n" +
+              "|---------|---------|---------|---------|"
           );
         });
 
@@ -45,7 +49,10 @@ suite("Cells function unit test suite", () => {
                 [3, 4],
               ],
             }),
-            "| test1 | test2 |\n|-------|-------|\n| 1     | 2     |\n| 3     | 4     |"
+            "| test1 | test2 |\n" +
+              "|-------|-------|\n" +
+              "| 1     | 2     |\n" +
+              "| 3     | 4     |"
           );
         });
 
@@ -117,7 +124,10 @@ suite("Cells function unit test suite", () => {
                 [3, 4],
               ],
             }),
-            "| test1 | $1 |\n|-------|----|\n| 1     | 2  |\n| 3     | 4  |"
+            "| test1 | ${1:header2} |\n" +
+              "|-------|---------|\n" +
+              "| 1     | 2       |\n" +
+              "| 3     | 4       |"
           );
         });
 
@@ -129,7 +139,10 @@ suite("Cells function unit test suite", () => {
               headers: ["test1", "test2"],
               content: [[1], [4]],
             }),
-            "| test1 | test2 |\n|-------|-------|\n| 1     | $1    |\n| 4     | $2    |"
+            "| test1 | test2    |\n" +
+              "|-------|----------|\n" +
+              "| 1     | ${1:cell 1,2} |\n" +
+              "| 4     | ${2:cell 2,2} |"
           );
         });
 
@@ -141,7 +154,10 @@ suite("Cells function unit test suite", () => {
               headers: ["test1"],
               content: [[1, 2], [3]],
             }),
-            "| test1 | $1 |\n|-------|----|\n| 1     | 2  |\n| 3     | $2 |"
+            "| test1 | ${1:header2 } |\n" +
+              "|-------|----------|\n" +
+              "| 1     | 2        |\n" +
+              "| 3     | ${2:cell 2,2} |"
           );
         });
       }
