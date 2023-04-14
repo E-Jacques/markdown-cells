@@ -6,6 +6,6 @@ export interface GenerateTableInput<
 > {
   width: number;
   height: number;
-  headers?: THeader[];
-  content?: TContent[][];
+  headers?: (THeader | Stringable)[];
+  content?: (TContent | Stringable)[][];
 }
