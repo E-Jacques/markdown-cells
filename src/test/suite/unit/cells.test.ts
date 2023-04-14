@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { generateTable } from "../../../cells";
+import { generateTable, parseData } from "../../../cells";
 import { CellError } from "../../../errors/CellError";
 
 suite("Cells function unit test suite", () => {
@@ -162,5 +162,54 @@ suite("Cells function unit test suite", () => {
         });
       }
     );
+  });
+
+  suite("For function parseData", () => {
+    suite("Should correctly detect width and height", () => {
+      test("General case", () => {
+        const parsedData = parseData(["h1 h2 h3", "d1 d2 d3", "d4 d5 d6"], " ");
+
+        assert.strictEqual(parsedData.width, 3);
+        assert.strictEqual(parsedData.height, 2);
+      });
+
+      test("With only header", () => {
+        const parsedData = parseData(["h1 h2 h3"], " ");
+        assert.strictEqual(parsedData.height, 0);
+        assert.strictEqual(parsedData.width, 3);
+      });
+    });
+
+    suite("Properly restitue headers and content", () => {
+      test("General case", () => {
+        const parsedData = parseData(["h1 h2 h3", "d1 d2 d3", "d4 d5 d6"], " ");
+
+        assert.deepEqual(parsedData.headers, ["h1", "h2", "h3"]);
+        assert.deepEqual(parsedData.content, [
+          ["d1", "d2", "d3"],
+          ["d4", "d5", "d6"],
+        ]);
+      });
+
+      test("With only header", () => {
+        const parsedData = parseData(["h1 h2 h3"], " ");
+        assert.deepEqual(parsedData.headers, ["h1", "h2", "h3"]);
+        assert.deepEqual(parsedData.content, undefined);
+      });
+    });
+
+    suite("Can handle different delimiter", () => {
+      test("With ';' as a delimiter", () => {
+        const parsedData = parseData(["h1;h2;h3", "d1;d2;d3", "d4;d5;d6"], ";");
+
+        assert.strictEqual(parsedData.width, 3);
+        assert.strictEqual(parsedData.height, 2);
+        assert.deepEqual(parsedData.headers, ["h1", "h2", "h3"]);
+        assert.deepEqual(parsedData.content, [
+          ["d1", "d2", "d3"],
+          ["d4", "d5", "d6"],
+        ]);
+      });
+    });
   });
 });
