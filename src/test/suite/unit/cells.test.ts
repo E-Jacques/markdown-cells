@@ -96,7 +96,7 @@ suite("Cells function unit test suite", () => {
                 ],
               }),
             new CellError(
-              "Too much data in cells. Expecting 2 on multiples lines (1, 2), got 3."
+              "Too much data in cells. Expecting 2 on multiples lines (1, 2), got 3 at maximum."
             )
           );
         });
