@@ -1,8 +1,14 @@
 {
   "name": "markdown-cells",
   "displayName": "Markdown Cells",
+  "publisher": "E-Jacques",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/E-Jacques/markdown-cells"
+  },
   "description": "Our goal is to helps you write markdown table faster !",
-  "version": "0.0.1",
+  "icon": "assets/icon.png",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.76.0"
   },
@@ -31,7 +37,7 @@
     "clean": "rm -rf out"
   },
   "devDependencies": {
-    "@types/vscode": "^1.77.0",
+    "@types/vscode": "^1.76.0",
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "16.x",
