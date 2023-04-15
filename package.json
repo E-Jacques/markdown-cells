@@ -1,6 +1,7 @@
 {
   "name": "markdown-cells",
   "displayName": "Markdown Cells",
+  "publisher": "E-Jacques",
   "repository": {
     "type": "git",
     "url": "https://github.com/E-Jacques/markdown-cells"
