@@ -12,11 +12,16 @@
   "engines": {
     "vscode": "^1.76.0"
   },
+  "keywords": [
+    "Markdown",
+    "table",
+    "cells",
+    "snippets",
+    "fast",
+    "utility"
+  ],
   "categories": [
     "Other"
-  ],
-  "activationEvents": [
-    "onCommand:markdownCells.generateTable"
   ],
   "main": "./out/extension.js",
   "contributes": {
