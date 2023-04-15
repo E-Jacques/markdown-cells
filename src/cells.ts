@@ -7,7 +7,6 @@ import { SnippetFiller } from "./snippet-filler";
 import { BasicIterator } from "./utils/basic-interator";
 import { ObjectUtils } from "./utils/object.utils";
 import { StringUtils } from "./utils/string.utils";
-import { VscodeUtils } from "./utils/vscode.utils";
 
 export async function getGenerateTableData(): Promise<{
   input: GenerateTableInput<string, string>;
@@ -15,13 +14,15 @@ export async function getGenerateTableData(): Promise<{
 }> {
   const activeEditor = vscode.window.activeTextEditor;
   if (activeEditor?.selections && activeEditor?.selections.length === 1) {
-    return {
-      input: parseData(
-        activeEditor.document.getText(activeEditor?.selection).split("\n"),
-        " "
-      ),
-      shouldReplace: true,
-    };
+    if (activeEditor.document.getText(activeEditor?.selection).length > 0) {
+      return {
+        input: parseData(
+          activeEditor.document.getText(activeEditor?.selection).split("\n"),
+          " "
+        ),
+        shouldReplace: true,
+      };
+    }
   }
 
   let input = await vscode.window.showInputBox({
