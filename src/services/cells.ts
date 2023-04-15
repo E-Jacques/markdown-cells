@@ -1,12 +1,12 @@
 import * as vscode from "vscode";
 
-import { CellError } from "./errors/CellError";
-import { GenerateTableInput } from "./interfaces/GenerateTableInput";
-import { Stringable } from "./interfaces/IStringable";
-import { SnippetFiller } from "./snippet-filler";
-import { BasicIterator } from "./utils/basic-interator";
-import { ObjectUtils } from "./utils/object.utils";
-import { StringUtils } from "./utils/string.utils";
+import { CellError } from "../errors/CellError";
+import { GenerateTableInput } from "../interfaces/GenerateTableInput";
+import { Stringable } from "../interfaces/IStringable";
+import { SnippetFiller } from "../snippet-filler";
+import { BasicIterator } from "../utils/basic-interator";
+import { ObjectUtils } from "../utils/object.utils";
+import { StringUtils } from "../utils/string.utils";
 
 export async function getGenerateTableData(): Promise<{
   input: GenerateTableInput<string, string>;
