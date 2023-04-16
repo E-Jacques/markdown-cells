@@ -1,5 +1,10 @@
 import * as assert from "assert";
-import { generateTable, parseData } from "../../../cells";
+import {
+  generateTable,
+  isTable,
+  parseData,
+  parseTableData,
+} from "../../../services/cells";
 import { CellError } from "../../../errors/CellError";
 
 suite("Cells function unit test suite", () => {
@@ -235,6 +240,76 @@ suite("Cells function unit test suite", () => {
 
     test("Random data", () => {
       assert.equal(isTable("h1 h2 h3\nd1 d2 d3"), false);
+    });
+  });
+
+  suite("For function parseTableData", () => {
+    test("Empty string", () => {
+      assert.throws(
+        () => parseTableData(""),
+        new CellError(
+          "Internal error: Souldn't try to parse table if data isn't a table."
+        )
+      );
+    });
+
+    test("Non table data", () => {
+      assert.throws(
+        () => parseTableData("h1 h2 h3\nd1 d2 d3"),
+        new CellError(
+          "Internal error: Souldn't try to parse table if data isn't a table."
+        )
+      );
+    });
+
+    test("Returns only header", () => {
+      const result = parseTableData("| h1 | h2 |\n" + "|----|----|");
+      assert.deepEqual(result.headers, [" h1 ", " h2 "]);
+      assert.deepEqual(result.content, undefined);
+    });
+
+    test("Returns header and content with one line", () => {
+      const result = parseTableData(
+        "| h1 | h2 |\n" + "|----|----|\n" + "| d1 | d2 |"
+      );
+      assert.deepEqual(result.headers, [" h1 ", " h2 "]);
+      assert.deepEqual(result.content, [[" d1 ", " d2 "]]);
+    });
+
+    test("Returns header and content with multiple lines", () => {
+      const result = parseTableData(
+        "| h1 | h2 |\n" + "|----|----|\n" + "| d1 | d2 |\n" + "| d3 | d4 |"
+      );
+      assert.deepEqual(result.headers, [" h1 ", " h2 "]);
+      assert.deepEqual(result.content, [
+        [" d1 ", " d2 "],
+        [" d3 ", " d4 "],
+      ]);
+    });
+
+    test("Returns correct data even if space around '|' isn't respected", () => {
+      const result = parseTableData(
+        "| h1 | h2    |\n" + "|----|----|\n" + "|d1| d2|\n" + "|d3    | d4 |"
+      );
+      assert.deepEqual(result.headers, [" h1 ", " h2    "]);
+      assert.deepEqual(result.content, [
+        ["d1", " d2"],
+        ["d3    ", " d4 "],
+      ]);
+    });
+
+    test("Handle inconsitent number of data per lines", () => {
+      const result = parseTableData(
+        "| h1 | h2 |\n" +
+          "|----|----|\n" +
+          "| d1 | d2 |\n" +
+          "| d3 | d4 | d5 | d6 |"
+      );
+      assert.deepEqual(result.headers, [" h1 ", " h2 "]);
+      assert.deepEqual(result.content, [
+        [" d1 ", " d2 "],
+        [" d3 ", " d4 ", " d5 ", " d6 "],
+      ]);
     });
   });
 });
