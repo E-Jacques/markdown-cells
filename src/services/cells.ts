@@ -68,6 +68,39 @@ export async function getGenerateTableData(): Promise<{
   return { shouldReplace: false, input: { width, height } };
 }
 
+export function parseTableData(data: string): {
+  content?: string[][];
+  headers: string[];
+} {
+  if (!isTable(data)) {
+    throw new CellError(
+      "Internal error: Souldn't try to parse table if data isn't a table."
+    );
+  }
+
+  if (data.at(-1) !== "\n") {
+    data += "\n";
+  }
+
+  const fullData: string[][] = [[]];
+  let match;
+  while ((match = REGEX.tableData.exec(data)) !== null) {
+    const [_, matchString] = match;
+    if (matchString === "\n") {
+      fullData.push([]);
+      continue;
+    }
+
+    fullData.at(-1)?.push(matchString);
+  }
+
+  const [headers, ...content] = fullData
+    .filter((arr) => arr.length !== 0)
+    .filter((arr) => !arr.every((s) => REGEX.isOnlyDash.test(s)));
+
+  return { headers, content: content.length === 0 ? undefined : content };
+}
+
 export function parseData(
   data: string[],
   rowDelimiter: string
@@ -76,6 +109,11 @@ export function parseData(
 
   const height = dataArray.length - 1; // Retrieve one because of header
   const width = Math.max(...dataArray.map((a) => a.length));
+
+  if (isTable(data.join("\n"))) {
+    return { width, height, ...parseTableData(data.join("\n")) };
+  }
+
   const headers = dataArray.shift();
   const content = height === 0 ? undefined : dataArray;
 
