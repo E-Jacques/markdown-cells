@@ -7,6 +7,31 @@ import { SnippetFiller } from "../snippet-filler";
 import { BasicIterator } from "../utils/basic-interator";
 import { ObjectUtils } from "../utils/object.utils";
 import { StringUtils } from "../utils/string.utils";
+import { REGEX } from "./regex.const";
+
+export function isTable(input: string): boolean {
+  let lines = input.split("\n");
+  if (lines.length < 2) {
+    return false;
+  }
+
+  // True if line at index 1 looks like |----|----|
+  if (!REGEX.tableDashedLine.test(lines[1])) {
+    return false;
+  }
+
+  if (!REGEX.tableLineWithData.test(lines[0])) {
+    return false;
+  }
+
+  for (let i = 2; i < lines.length; i++) {
+    if (!REGEX.tableLineWithData.test(lines[i])) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 export async function getGenerateTableData(): Promise<{
   input: GenerateTableInput<string, string>;
