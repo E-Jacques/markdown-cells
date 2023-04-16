@@ -111,7 +111,11 @@ export function parseData(
   const width = Math.max(...dataArray.map((a) => a.length));
 
   if (isTable(data.join("\n"))) {
-    return { width, height, ...parseTableData(data.join("\n")) };
+    return {
+      width: width - 2,
+      height: height - 1,
+      ...parseTableData(data.join("\n")),
+    };
   }
 
   const headers = dataArray.shift();
