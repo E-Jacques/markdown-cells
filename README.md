@@ -6,9 +6,9 @@ Using table in markdown can be painfull because of all the syntax you need to pu
 
 ## Features
 
-### Generate Table
+### Generate table
 
-> To execute: Press SHFIT + P and select `Markdown cells: Generate table`
+> To execute: Press SHFIT + P and select `Markdown Cells: Generate table`
 
 There is two way of generating a table.
 
@@ -25,6 +25,16 @@ If the number of data in each line isn't consistent, the maximum width will be u
 <img src="assets/generate_table_partial_data.gif"></img>
 
 > Warning: The data that is used as input will be replace by the table !
+
+### Format table
+
+> To execute: Press SHIFT + P and select `Markdown Cells: Format table`
+
+After selecting the table you want to format, execute the command. Your table should be well aligned now !
+
+<img src="assets/format_table.gif"></img>
+
+> Warning: The data that is used as input will be replace by the formatted table !
 
 ## Requirements
 
@@ -47,7 +57,6 @@ No issues have been spotted yet. Don't hesitate to create a ticket if you've exp
 - Add/remove columns and lines.
 - Configuration of the delimiters used to generate table using existing data.
 - Hide commands when user isn't in markdown file.
-- Format table. 
 
 ## Release Notes
 
@@ -56,3 +65,7 @@ No issues have been spotted yet. Don't hesitate to create a ticket if you've exp
 Initial release of the extension.
 
 First iteration of the `Generate table` command.
+
+### 1.1.0
+
+First iteration of the `Format table` command.
