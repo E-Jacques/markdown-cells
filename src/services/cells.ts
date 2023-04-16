@@ -1,12 +1,53 @@
 import * as vscode from "vscode";
 
-import { CellError } from "./errors/CellError";
-import { GenerateTableInput } from "./interfaces/GenerateTableInput";
-import { Stringable } from "./interfaces/IStringable";
-import { SnippetFiller } from "./snippet-filler";
-import { BasicIterator } from "./utils/basic-interator";
-import { ObjectUtils } from "./utils/object.utils";
-import { StringUtils } from "./utils/string.utils";
+import { CellError } from "../errors/CellError";
+import { GenerateTableInput } from "../interfaces/GenerateTableInput";
+import { Stringable } from "../interfaces/IStringable";
+import { SnippetFiller } from "../snippet-filler";
+import { BasicIterator } from "../utils/basic-interator";
+import { ObjectUtils } from "../utils/object.utils";
+import { StringUtils } from "../utils/string.utils";
+import { REGEX } from "./regex.const";
+
+export function getFullTable(): string {
+  const activeEditor = vscode.window.activeTextEditor;
+  if (activeEditor?.selections && activeEditor?.selections.length === 1) {
+    if (activeEditor.document.getText(activeEditor?.selection).length > 0) {
+      return activeEditor.document.getText(
+        new vscode.Range(
+          activeEditor.selection.start,
+          activeEditor.selection.end
+        )
+      );
+    }
+  }
+
+  throw new CellError("Please select a range.");
+}
+
+export function isTable(input: string): boolean {
+  let lines = input.split("\n");
+  if (lines.length < 2) {
+    return false;
+  }
+
+  // True if line at index 1 looks like |----|----|
+  if (!REGEX.tableDashedLine.test(lines[1])) {
+    return false;
+  }
+
+  if (!REGEX.tableLineWithData.test(lines[0])) {
+    return false;
+  }
+
+  for (let i = 2; i < lines.length; i++) {
+    if (!REGEX.tableLineWithData.test(lines[i])) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 export async function getGenerateTableData(): Promise<{
   input: GenerateTableInput<string, string>;
@@ -43,6 +84,39 @@ export async function getGenerateTableData(): Promise<{
   return { shouldReplace: false, input: { width, height } };
 }
 
+export function parseTableData(data: string): {
+  content?: string[][];
+  headers: string[];
+} {
+  if (!isTable(data)) {
+    throw new CellError(
+      "Internal error: Souldn't try to parse table if data isn't a table."
+    );
+  }
+
+  if (data.at(-1) !== "\n") {
+    data += "\n";
+  }
+
+  const fullData: string[][] = [[]];
+  let match;
+  while ((match = REGEX.tableData.exec(data)) !== null) {
+    const [_, matchString] = match;
+    if (matchString === "\n") {
+      fullData.push([]);
+      continue;
+    }
+
+    fullData.at(-1)?.push(matchString);
+  }
+
+  const [headers, ...content] = fullData
+    .filter((arr) => arr.length !== 0)
+    .filter((arr) => !arr.every((s) => REGEX.isOnlyDash.test(s)));
+
+  return { headers, content: content.length === 0 ? undefined : content };
+}
+
 export function parseData(
   data: string[],
   rowDelimiter: string
@@ -51,6 +125,15 @@ export function parseData(
 
   const height = dataArray.length - 1; // Retrieve one because of header
   const width = Math.max(...dataArray.map((a) => a.length));
+
+  if (isTable(data.join("\n"))) {
+    return {
+      width: width - 2,
+      height: height - 1,
+      ...parseTableData(data.join("\n")),
+    };
+  }
+
   const headers = dataArray.shift();
   const content = height === 0 ? undefined : dataArray;
 
