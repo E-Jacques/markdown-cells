@@ -9,6 +9,22 @@ import { ObjectUtils } from "../utils/object.utils";
 import { StringUtils } from "../utils/string.utils";
 import { REGEX } from "./regex.const";
 
+export function getFullTable(): string {
+  const activeEditor = vscode.window.activeTextEditor;
+  if (activeEditor?.selections && activeEditor?.selections.length === 1) {
+    if (activeEditor.document.getText(activeEditor?.selection).length > 0) {
+      return activeEditor.document.getText(
+        new vscode.Range(
+          activeEditor.selection.start,
+          activeEditor.selection.end
+        )
+      );
+    }
+  }
+
+  throw new CellError("Please select a range.");
+}
+
 export function isTable(input: string): boolean {
   let lines = input.split("\n");
   if (lines.length < 2) {
