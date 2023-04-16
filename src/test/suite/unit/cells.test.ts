@@ -216,6 +216,30 @@ suite("Cells function unit test suite", () => {
         ]);
       });
     });
+
+    suite("Correctly parse tables", () => {
+      test("General case", () => {
+        const parsedData = parseData(
+          [
+            "| a | d | v |",
+            "|----------|----------|----------|",
+            "| 55 | 6 | 222222222222222222222222 |",
+            "| cell 2,1 | cell 2,2 | cell 2,3 |",
+            "| cell 3,1 | cell 3,2 | cell 3,3 |",
+          ],
+          "|"
+        );
+
+        assert.strictEqual(parsedData.height, 3);
+        assert.strictEqual(parsedData.width, 3);
+        assert.deepEqual(parsedData.headers, [" a ", " d ", " v "]);
+        assert.deepEqual(parsedData.content, [
+          [" 55 ", " 6 ", " 222222222222222222222222 "],
+          [" cell 2,1 ", " cell 2,2 ", " cell 2,3 "],
+          [" cell 3,1 ", " cell 3,2 ", " cell 3,3 "],
+        ]);
+      });
+    });
   });
 
   suite("For function isTable", () => {
