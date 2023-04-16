@@ -212,4 +212,29 @@ suite("Cells function unit test suite", () => {
       });
     });
   });
+
+  suite("For function isTable", () => {
+    test("Empty string", () => {
+      assert.equal(isTable(""), false);
+    });
+
+    test("Table with only header", () => {
+      assert.equal(isTable("| h1 | h2 |\n" + "|----|----|"), true);
+    });
+
+    test("Table with header & content", () => {
+      assert.equal(
+        isTable("| h1 | h2 |\n" + "|----|----|\n" + "| d1 | d2 |"),
+        true
+      );
+    });
+
+    test("With only content and no header", () => {
+      assert.equal(isTable("| d1 | d2 | d3 |"), false);
+    });
+
+    test("Random data", () => {
+      assert.equal(isTable("h1 h2 h3\nd1 d2 d3"), false);
+    });
+  });
 });
